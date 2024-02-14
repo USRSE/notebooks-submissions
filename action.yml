@@ -1,0 +1,30 @@
+name: Check notebooks submission
+description: Check if submission material is OK
+
+inputs:
+  readme-path:
+    description: Path of the README file with instructions, relative to the root of the repository
+    required: false
+    default: README.md
+
+outputs:
+  code-to-run:
+    description: Code to run to perform the test and/or build
+    value: ${{ steps.extract-code.outputs.extracted }}
+
+runs:
+  using: composite
+  steps:
+
+  - name: Extract code blocks from markdown file
+    id: extract-code
+    shell: bash
+    run: |
+      npm install -g codedown
+      echo "extracted=$(codedown < '${{ inputs.readme-path }}' sh)" >> $GITHUB_OUTPUT
+
+  - name: Run the code
+    id: run-code
+    shell: bash
+    run: |
+      ${{ steps.extract-code.output.extracted }}
