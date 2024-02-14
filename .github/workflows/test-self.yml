@@ -1,0 +1,16 @@
+name: Test this repository
+
+on:
+  push:
+
+jobs:
+
+  test-action:
+
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lbianchi-lbl/notebooks-ci@main
+        with:
+          readme-path: README.md
+      
