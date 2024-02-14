@@ -21,7 +21,7 @@ runs:
     shell: bash
     run: |
       npm install -g codedown
-      echo "extracted=$(codedown < '${{ inputs.readme-path }}' sh)" >> $GITHUB_OUTPUT
+      echo "extracted=$(codedown < '${{ inputs.readme-path }}' bash)" >> $GITHUB_OUTPUT
 
   - name: Run the code
     id: run-code
