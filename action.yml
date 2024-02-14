@@ -25,6 +25,9 @@ runs:
       cat code.sh
       bash --noprofile --norc -e -o pipefail code.sh
 
+  - shell: bash
+    run: ls -lht
+
   - name: Save HTML files as artifact
     uses: actions/upload-artifact@v4
     with:
