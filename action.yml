@@ -7,11 +7,6 @@ inputs:
     required: false
     default: README.md
 
-outputs:
-  code-to-run:
-    description: Code to run to perform the test and/or build
-    value: ${{ steps.extract-code.outputs.extracted }}
-
 runs:
   using: composite
   steps:
@@ -21,10 +16,11 @@ runs:
     shell: bash
     run: |
       npm install -g codedown
-      echo "extracted=$(codedown < '${{ inputs.readme-path }}' bash)" >> $GITHUB_OUTPUT
+      codedown < "${{ inputs.readme-path }}" > code.sh
 
   - name: Run the code
     id: run-code
     shell: bash
     run: |
-      ${{ steps.extract-code.output.extracted }}
+      cat code.sh
+      bash --noprofile --norc -e -o pipefail code.sh
