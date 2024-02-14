@@ -15,3 +15,11 @@ which -a quarto
 quarto check
 popd
 ```
+
+## Compiling document
+
+```bash
+git clone https://github.com/USRSE/jupyter-notebook-templates && cd jupyter-notebook-templates
+ls -l
+quarto render reproducible_document_template.ipynb --to html
+```
