@@ -24,3 +24,10 @@ runs:
     run: |
       cat code.sh
       bash --noprofile --norc -e -o pipefail code.sh
+
+  - name: Save HTML files as artifact
+    uses: actions/upload-artifact@v4
+    with:
+      path: '*.html'
+      if-no-files-found: error
+      name: html
