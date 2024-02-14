@@ -16,7 +16,7 @@ runs:
     shell: bash
     run: |
       npm install -g codedown
-      codedown < "${{ inputs.readme-path }}" > code.sh
+      codedown < "${{ inputs.readme-path }}" bash > code.sh
 
   - name: Run the code
     id: run-code
