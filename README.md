@@ -20,6 +20,7 @@ popd
 
 ```bash
 git clone https://github.com/USRSE/jupyter-notebook-templates && cd jupyter-notebook-templates
+git checkout reproducible-document
 ls -l
 quarto render reproducible_document_template.ipynb --to html
 ```
