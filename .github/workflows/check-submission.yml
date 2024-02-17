@@ -6,20 +6,24 @@ on:
       repository:
         required: true
         description: Full name (owner/repo-name) to be checked
+        type: string
 
       ref:
         required: true
         description: Git ref to be checked
+        type: string
 
       reproducible-document:
         required: false
         description: Path to reproducible document, if any
         default: ''
+        type: string
 
       quarto-render-args:
         required: false
         description: Extra args/options for the quarto render command
         default: --to html -M self-contained:true --execute
+        type: string
 
   workflow_dispatch:
     inputs:
