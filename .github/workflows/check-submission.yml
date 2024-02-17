@@ -64,12 +64,11 @@ jobs:
       - name: Run quarto render
         if: inputs.reproducible-document
         run: |
-          cat << 'EOF' > start
+          cat << 'EOF' >> postBuild
           #!/bin/bash
           set -e
           set -o pipefail
           quarto render "${{ inputs.reproducible-document }}" ${{ inputs.quarto-render-args }}
-          exec "$@"
           EOF
 
       - uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
