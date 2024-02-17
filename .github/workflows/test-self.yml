@@ -13,4 +13,10 @@ jobs:
       - uses: lbianchi-lbl/notebooks-ci@main
         with:
           readme-path: README.md
-      
+
+  test-check-submission:
+    uses: lbianchi-lbl/notebooks-ci/.github/workflows/check-submission.yml@main
+    with:
+      repository: lbianchi-lbl/sample-submission-1
+      ref: 44e112021bd1f85148c237f972c066a6e6ac92dd
+      reproducible-document: my_doc.ipynb
