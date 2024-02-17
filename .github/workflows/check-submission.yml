@@ -66,6 +66,8 @@ jobs:
         run: |
           cat << 'EOF' > start
           #!/bin/bash
+          set -e
+          set -o pipefail
           quarto render "${{ inputs.reproducible-document }}" ${{ inputs.quarto-render-args }}
           exec "$@"
           EOF
