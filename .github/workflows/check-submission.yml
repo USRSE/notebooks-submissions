@@ -86,7 +86,7 @@ jobs:
 
       - uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
         with:
-          # NO_PUSH: true
+          NO_PUSH: "true"
           MYBINDERORG_TAG: ${{ inputs.ref }}
 
   notify:
