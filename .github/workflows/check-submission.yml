@@ -88,3 +88,31 @@ jobs:
         with:
           NO_PUSH: true
           MYBINDERORG_TAG: ${{ inputs.ref }}
+
+  notify:
+    needs: [repo2docker-build]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+
+      - name: Notify build failure
+        if: ${{ needs.repo2docker-build.result == 'failure' }}
+        run: |
+          cat << 'EOF' > $GITHUB_SUMMARY
+          The CI build was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
+
+          See the following resources for details:
+          
+          - <https://github.com/USRSE/usrse23/wiki/notebooks-submissions>
+
+          EOF
+
+      - name: Notify build success
+        if: ${{ needs.repo2docker-build.result == 'success' }}
+        run: |
+          cat << 'EOF' > $GITHUB_SUMMARY
+          The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
+
+          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ inputs.repository }}/${{ inputs.ref}}) :point_left: Launch a binder notebook on this branch
+
+          EOF
