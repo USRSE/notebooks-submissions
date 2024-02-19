@@ -25,6 +25,12 @@ on:
         default: --to html -M self-contained:true --execute
         type: string
 
+      container-registry:
+        description: If set, container image will be pushed to this registry
+        type: string
+        required: false
+        default: ghcr.io
+
   workflow_dispatch:
     inputs:
 
