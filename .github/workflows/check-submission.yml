@@ -62,6 +62,12 @@ on:
         required: false
         default: ghcr.io
 
+      binder-cache-branch:
+        description: If given, the built container image will be written to .binder/Dockerfile and pushed to this branch
+        type: string
+        required: false
+        default: ''
+
 jobs:
 
   repo2docker-build:
@@ -106,6 +112,23 @@ jobs:
           IMAGE_NAME: ${{ inputs.repository }}
           MYBINDERORG_TAG: ${{ inputs.ref }}
           BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
+
+      - name: Create new branch containing Binder dockerfile
+        if: inputs.binder-cache-branch
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global push.autoSetupRemote true
+          git switch --force-create ${{ inputs.binder-cache-branch }}
+          mkdir -p .binder
+
+          cat << 'EOF' > .binder/Dockerfile
+          FROM ${{ inputs.container-registry }}/${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
+          EOF
+
+          git add .binder/Dockerfile
+          git commit -m "Update image tag"
+          git push -f
 
   notify:
     needs: [repo2docker-build]
