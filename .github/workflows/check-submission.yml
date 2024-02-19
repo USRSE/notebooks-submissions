@@ -116,7 +116,6 @@ jobs:
           NO_PUSH: "true"
           IMAGE_NAME: ${{ inputs.repository }}
           MYBINDERORG_TAG: ${{ inputs.ref }}
-          BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
 
       - name: repo2docker (push)
         uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
@@ -129,7 +128,6 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ inputs.repository }}
           MYBINDERORG_TAG: ${{ inputs.ref }}
-          BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
 
       - name: Create new branch containing Binder dockerfile
         if: inputs.container-registry && inputs.binder-cache-branch
