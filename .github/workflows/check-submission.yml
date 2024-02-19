@@ -108,10 +108,22 @@ jobs:
           EOF
           cat postBuild
 
-      - uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
+      - name: repo2docker (no push)
+        uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
+        if: inputs.container-registry == ''
+        id: repo2docker-no-push
+        with:
+          NO_PUSH: "true"
+          IMAGE_NAME: ${{ inputs.repository }}
+          MYBINDERORG_TAG: ${{ inputs.ref }}
+          BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
+
+      - name: repo2docker (push)
+        uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
+        if: inputs.container-registry
         id: repo2docker
         with:
-          NO_PUSH: ${{ inputs.container-registry && 'false' || 'true' }}
+          NO_PUSH: "false"
           DOCKER_REGISTRY: ${{ inputs.container-registry }}
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -120,7 +132,7 @@ jobs:
           BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
 
       - name: Create new branch containing Binder dockerfile
-        if: inputs.binder-cache-branch
+        if: inputs.container-registry && inputs.binder-cache-branch
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
