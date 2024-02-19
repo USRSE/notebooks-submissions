@@ -21,3 +21,4 @@ jobs:
       # ref: 44e112021bd1f85148c237f972c066a6e6ac92dd # should fail
       ref: d0b358a71fb1054158822d5cdc8fca21f4cb2bd9 # should pass
       reproducible-document: my_doc.ipynb
+      container-registry: ''

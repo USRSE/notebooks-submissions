@@ -50,6 +50,12 @@ on:
         default: --to html -M self-contained:true --execute
         type: string
 
+      container-registry:
+        description: If set, container image will be pushed to this registry
+        type: string
+        required: false
+        default: ghcr.io
+
 jobs:
 
   repo2docker-build:
@@ -84,20 +90,16 @@ jobs:
           EOF
           cat postBuild
 
-      - name: Create new branch to push binder/Dockerfile to
-        run: |
-          git config --global push.autoSetupRemote true
-          git switch --force-create binder-cache
-
       - uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
+        id: repo2docker
         with:
-          NO_PUSH: "false"
-          DOCKER_REGISTRY: ghcr.io
+          NO_PUSH: ${{ inputs.container-registry && 'false' || 'true' }}
+          DOCKER_REGISTRY: ${{ inputs.container-registry }}
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ inputs.repository }}
           MYBINDERORG_TAG: ${{ inputs.ref }}
-          BINDER_CACHE: "true"
+          BINDER_CACHE: "false"  # done separately outside of this action to allow customizing branch
 
   notify:
     needs: [repo2docker-build]
