@@ -31,6 +31,12 @@ on:
         required: false
         default: ghcr.io
 
+      binder-cache-branch:
+        description: If given, the built container image will be written to .binder/Dockerfile and pushed to this branch
+        type: string
+        required: false
+        default: ''
+
   workflow_dispatch:
     inputs:
 
