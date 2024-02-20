@@ -32,7 +32,7 @@ on:
         default: ghcr.io
 
       binder-cache-branch:
-        description: If given, the built container image will be written to .binder/Dockerfile and pushed to this branch
+        description: If set (default), the built container image will be written to .binder/Dockerfile and pushed to this branch. To disable this, set it to the empty string.
         type: string
         required: false
         default: binder-cache
