@@ -128,12 +128,22 @@ jobs:
 
           EOF
 
-      - name: Notify build success
-        if: ${{ needs.repo2docker-build.result == 'success' }}
+      - name: Notify build success (no Binder cache)
+        if:  needs.repo2docker-build.result == 'success' && !inputs.binder-cache-branch
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
 
           [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ inputs.repository }}/${{ inputs.ref}}) :point_left: Launch a binder notebook on this branch
+
+          EOF
+
+      - name: Notify build success (Binder cache)
+        if: needs.repo2docker-build.result == 'success' && inputs.binder-cache-branch
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
+
+          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ inputs.repository }}/${{ inputs.binder-cache-branch }}) :point_left: Launch a binder notebook from the `${{ inputs.binder-cache-branch }}` branch
 
           EOF
