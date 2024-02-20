@@ -35,44 +35,8 @@ on:
         description: If given, the built container image will be written to .binder/Dockerfile and pushed to this branch
         type: string
         required: false
-        default: ''
+        default: binder-cache
 
-  workflow_dispatch:
-    inputs:
-
-      repository:
-        required: true
-        description: Full name (owner/repo-name) to be checked
-        type: string
-
-      ref:
-        required: true
-        description: Git ref to be checked
-        type: string
-
-      reproducible-document:
-        required: false
-        description: Path to reproducible document, if any
-        default: ''
-        type: string
-
-      quarto-render-args:
-        required: false
-        description: Extra args/options for the quarto render command
-        default: --to html -M self-contained:true --execute
-        type: string
-
-      container-registry:
-        description: If set, container image will be pushed to this registry
-        type: string
-        required: false
-        default: ghcr.io
-
-      binder-cache-branch:
-        description: If given, the built container image will be written to .binder/Dockerfile and pushed to this branch
-        type: string
-        required: false
-        default: ''
 
 jobs:
 
