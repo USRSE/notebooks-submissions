@@ -103,7 +103,7 @@ jobs:
           mkdir -p .binder
 
           cat << 'EOF' > .binder/Dockerfile
-          FROM ${{ inputs.container-registry }}/${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
+          FROM ${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
           EOF
 
           git add .binder/Dockerfile
