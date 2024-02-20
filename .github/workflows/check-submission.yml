@@ -37,6 +37,15 @@ on:
         required: false
         default: binder-cache
 
+      build-artifacts:
+        description:
+          If set, these files or directories will be extracted by the built container image and made available as GHA artifacts.
+          Multiple entries are supported if a multiline string is used.
+          Each line may refer to either files or directories, however wildcard patterns are NOT supported.
+        type: string
+        required: false
+        default: ''
+
 jobs:
 
   repo2docker-build:
@@ -85,6 +94,27 @@ jobs:
           git add .binder/Dockerfile
           git commit -m "Update image tag"
           git push -f
+
+      - name: Copy artifacts from built image
+        if: inputs.build-artifacts
+        run: |
+          stuff_to_copy="${{ inputs.build-artifacts }}"
+          container_id=$(docker create "${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}")
+          for file_or_dir in $stuff_to_copy
+          do
+              docker cp ${container_id}:${file_or_dir} ./${file_or_dir}
+          done
+          docker rm --verbose ${container_id}
+          ls -ltr .
+
+      - name: Upload copied build artifacts
+        if: inputs.build-artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: ${{ inputs.build-artifacts }}
+          if-no-files-found: error
+        id: upload-build-artifacts
 
   notify:
     needs: [repo2docker-build]
