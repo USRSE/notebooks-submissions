@@ -107,7 +107,7 @@ jobs:
           do
               docker cp ${container_id}:${container_working_dir}/${file_or_dir} ./${file_or_dir}
           done
-          docker rm --verbose ${container_id}
+          docker rm --force --volumes ${container_id}
           ls -ltr .
 
       - name: Upload copied build artifacts
