@@ -100,9 +100,12 @@ jobs:
         run: |
           stuff_to_copy="${{ inputs.build-artifacts }}"
           container_id=$(docker create "${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}")
+          docker start "${container_id}"
+          container_working_dir=$(docker exec "$container_id" pwd)
+
           for file_or_dir in $stuff_to_copy
           do
-              docker cp ${container_id}:${file_or_dir} ./${file_or_dir}
+              docker cp ${container_id}:${container_working_dir}/${file_or_dir} ./${file_or_dir}
           done
           docker rm --verbose ${container_id}
           ls -ltr .
