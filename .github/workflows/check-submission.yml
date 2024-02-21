@@ -52,6 +52,12 @@ on:
         required: false
         default: canary
 
+      binder-base-url:
+        description: Base URL for Binderhub instance to use for launch links/buttons
+        type: string
+        required: false
+        default: 'https://mybinder.org/v2'
+
 jobs:
 
   image-build:
@@ -122,41 +128,27 @@ jobs:
           if-no-files-found: error
         id: upload-build-artifacts
 
-  notify:
-    needs: [image-build, container-startup]
+  binder-cache:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    if: inputs.binder-cache-branch
+    needs: [image-build]
+    outputs:
+      ref: ${{ steps.update-repo.branch-name }}
     steps:
 
-      - name: Notify build failure
-        if: ${{ !( needs.image-build.result == 'success' && needs.container-startup.result == 'success') }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+
+      - name: Update repo with Binder cache branch
+        id: update-repo
         run: |
-          cat << 'EOF' > $GITHUB_STEP_SUMMARY
-          The CI run was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
-
-          See the following resources for details:
-          
-          - <https://github.com/USRSE/usrse23/wiki/notebooks-submissions>
-
-          EOF
-
-      - name: Notify build success (no Binder cache)
-        if:  needs.image-build.result == 'success' && needs.container-startup.result == 'success' && !inputs.binder-cache-branch
-        run: |
-          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
-          The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
-
-          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ inputs.repository }}/${{ inputs.ref}}) :point_left: Launch a binder notebook on this branch
-
-          EOF
-
-      - name: Create Binder cache branch
-        if: needs.image-build.result == 'success' && needs.container-startup.result == 'success' && inputs.binder-cache-branch
-        run: |
+          branch_name="${{ inputs.binder-cache.branch }}"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           git config --global push.autoSetupRemote true
-          git switch --force-create ${{ inputs.binder-cache-branch }}
+          git switch --force-create "$branch_name"
           mkdir -p .binder
 
           cat << 'EOF' > .binder/Dockerfile
@@ -166,13 +158,44 @@ jobs:
           git add .binder/Dockerfile
           git commit -m "Update image tag"
           git push -f
+          echo "branch-name=$branch_name" >> $GITHUB_OUTPUT
 
-      - name: Notify build success (Binder cache)
-        if: needs.image-build.result == 'success' && needs.container-startup.result == 'success' && inputs.binder-cache-branch
+  report:
+    name: Report status
+    needs: [image-build, container-startup, binder-cache]
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    steps:
+
+      - name: Report build failure
+        if: ${{ !( needs.image-build.result == 'success' && needs.container-startup.result == 'success') }}
+        run: |
+          cat << EOF > $GITHUB_STEP_SUMMARY
+          The CI run was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
+
+          See the following resources for details:
+          
+          - <https://github.com/USRSE/usrse23/wiki/notebooks-submissions>
+
+          EOF
+
+      - name: Report build success
+        if:  needs.image-build.result == 'success' && needs.container-startup.result == 'success'
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
 
-          [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/${{ inputs.repository }}/${{ inputs.binder-cache-branch }}) :point_left: Launch a binder notebook from the `${{ inputs.binder-cache-branch }}` branch
+          EOF
 
+      - name: Add Binder launch (w/ cache)
+        if: needs.binder-cache.result == 'success'
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          [![Binder](https://mybinder.org/badge_logo.svg)](${{ inputs.binder-base-url }}/gh/${{ inputs.repository }}/${{ needs.binder-cache.outputs.ref }}) :point_left: Launch Binder from ${{ inputs.repository }}@${{ needs.binder-cache.outputs.ref }} (faster)
+          EOF
+
+      - name: Add Binder launch
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          [![Binder](https://mybinder.org/badge_logo.svg)](${{ inputs.binder-base-url }}/gh/${{ inputs.repository }}/${{ inputs.ref}}) :point_left: Launch Binder from ${{ inputs.repository }}@${{ inputs.ref }} (needs rebuild)
           EOF
