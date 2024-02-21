@@ -46,10 +46,18 @@ on:
         required: false
         default: ''
 
+      test-container:
+        description: Container name to use for testing the built image.
+        type: string
+        required: false
+        default: canary
+
 jobs:
 
-  repo2docker-build:
+  image-build:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
     steps:
 
       - uses: actions/checkout@v4
@@ -78,37 +86,32 @@ jobs:
           IMAGE_NAME: ${{ inputs.repository }}
           MYBINDERORG_TAG: ${{ inputs.ref }}
 
-      - name: Create new branch containing Binder dockerfile
-        if: inputs.container-registry && inputs.binder-cache-branch
+  container-startup:
+    name: Check that container starts up without errors
+    if: inputs.test-container
+    runs-on: ubuntu-latest
+    needs: [image-build]
+    steps:
+
+      - name: Run command to test built image ${{ needs.image-build.outputs.image }}
+        id: run
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git config --global push.autoSetupRemote true
-          git switch --force-create ${{ inputs.binder-cache-branch }}
-          mkdir -p .binder
+          canary_command="ls -la"
+          docker run --name "${{ inputs.test-container }}" "${{ needs.image-build.outputs.image }}" $canary_command
 
-          cat << 'EOF' > .binder/Dockerfile
-          FROM ${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
-          EOF
-
-          git add .binder/Dockerfile
-          git commit -m "Update image tag"
-          git push -f
-
-      - name: Copy artifacts from built image
-        if: inputs.build-artifacts
+      - name: Copy artifacts from container
+        id: copy
         run: |
           stuff_to_copy="${{ inputs.build-artifacts }}"
-          container_id=$(docker create "${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}")
-          docker start "${container_id}"
-          container_working_dir=$(docker exec "$container_id" pwd)
+          container_working_dir=$(docker inspect --format '{{.Config.WorkingDir}}' "${{ inputs.test-container }}")
 
           for file_or_dir in $stuff_to_copy
           do
-              docker cp ${container_id}:${container_working_dir}/${file_or_dir} ./${file_or_dir}
+              docker cp "${{ inputs.test-container }}:${container_working_dir}" "./${file_or_dir}"
           done
-          docker rm --force --volumes ${container_id}
-          ls -ltr .
+
+          # delete container once done
+          docker rm --volumes "${{ inputs.test-container }}"
 
       - name: Upload copied build artifacts
         if: inputs.build-artifacts
@@ -120,16 +123,16 @@ jobs:
         id: upload-build-artifacts
 
   notify:
-    needs: [repo2docker-build]
+    needs: [image-build, container-startup]
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
 
       - name: Notify build failure
-        if: ${{ needs.repo2docker-build.result == 'failure' }}
+        if: ${{ !( needs.image-build.result == 'success' && needs.container-startup.result == 'success') }}
         run: |
           cat << 'EOF' > $GITHUB_STEP_SUMMARY
-          The CI build was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
+          The CI run was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
 
           See the following resources for details:
           
@@ -138,7 +141,7 @@ jobs:
           EOF
 
       - name: Notify build success (no Binder cache)
-        if:  needs.repo2docker-build.result == 'success' && !inputs.binder-cache-branch
+        if:  needs.image-build.result == 'success' && needs.container-startup.result == 'success' && !inputs.binder-cache-branch
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
@@ -147,8 +150,25 @@ jobs:
 
           EOF
 
+      - name: Create Binder cache branch
+        if: needs.image-build.result == 'success' && needs.container-startup.result == 'success' && inputs.binder-cache-branch
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global push.autoSetupRemote true
+          git switch --force-create ${{ inputs.binder-cache-branch }}
+          mkdir -p .binder
+
+          cat << 'EOF' > .binder/Dockerfile
+          FROM ${{ needs.image-build.outputs.image }}
+          EOF
+
+          git add .binder/Dockerfile
+          git commit -m "Update image tag"
+          git push -f
+
       - name: Notify build success (Binder cache)
-        if: needs.repo2docker-build.result == 'success' && inputs.binder-cache-branch
+        if: needs.image-build.result == 'success' && needs.container-startup.result == 'success' && inputs.binder-cache-branch
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           The CI build was successful for ${{ inputs.repository }}@${{ inputs.ref }}!
