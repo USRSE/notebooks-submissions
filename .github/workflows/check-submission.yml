@@ -116,7 +116,7 @@ jobs:
 
           for file_or_dir in $stuff_to_copy
           do
-              docker cp "${{ inputs.test-container }}:${container_working_dir}" "./${file_or_dir}"
+              docker cp "${{ inputs.test-container }}:${container_working_dir}/${file_or_dir}" "./${file_or_dir}"
           done
 
           # delete container once done
