@@ -62,6 +62,27 @@ on:
 
 jobs:
 
+  info:
+    name: Info about the workflow run
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+
+      - name: Called workflow info
+        run: |
+          wf_info=$(
+            gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
+            --jq '.referenced_workflows'
+          )
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo "$wf_info" | jq >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
   image-build:
     name: Build image (repo2docker)
     runs-on: ubuntu-latest
