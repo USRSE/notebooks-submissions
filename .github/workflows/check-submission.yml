@@ -86,11 +86,13 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const runInfo = await github.rest.actions.getWorkflowRun({
+            const resp = await github.rest.actions.getWorkflowRun({
               run_id: context.runId,
               owner: context.repo.owner,
               repo: context.repo.repo,
-            }).data;
+            });
+            core.notice(JSON.stringify(resp));
+            const runInfo = resp.data;
             core.notice(JSON.stringify(runInfo));
             for (const wf of runInfo.referenced_workflows) {
               core.notice(JSON.stringify(wf));
