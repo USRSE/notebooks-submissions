@@ -87,7 +87,7 @@ jobs:
         with:
           script: |
             const runInfo = await github.rest.actions.getWorkflowRun({
-              run_id: context.run_id,
+              run_id: context.runId,
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
