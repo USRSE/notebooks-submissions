@@ -90,7 +90,7 @@ jobs:
               run_id: context.runId,
               owner: context.repo.owner,
               repo: context.repo.repo,
-            });
+            }).data;
             core.notice(JSON.stringify(runInfo));
             for (const wf of runInfo.referenced_workflows) {
               core.notice(JSON.stringify(wf));
