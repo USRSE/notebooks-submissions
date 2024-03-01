@@ -82,6 +82,18 @@ jobs:
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$wf_info" | jq >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
+      - name: Called workflow info using JS
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runInfo = await github.rest.actions.runs({
+              run_id: context.run_id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            for (const wf of runInfo.referenced_workflows) {
+              core.notice(JSON.stringify(wf));
+            }
 
   image-build:
     name: Build image (repo2docker)
