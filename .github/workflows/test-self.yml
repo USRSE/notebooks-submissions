@@ -34,8 +34,18 @@ jobs:
         with:
           repository: ${{ matrix.repository }}
           ref: ${{ matrix.ref }}
+          token: ${{ secrets.CLIENT_REPO_TOKEN }}
       - name: Update references to workflow under test with current commit
         run: |
           git log -n 1
           sed -i 's#^\(    uses: ${{ matrix.workflow-under-test }}\)\(@[^[:space:]]*\)#\1@${{ github.sha }}#' .github/workflows/*.yml
           git status -vv
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global push.autoSetupRemote true
+          git add .github/workflows/*.yml
+          git status -vv
+          git commit -m "Test ${{ matrix.workflow-under-test }}@${{ github.sha }}"
+          git push -f
