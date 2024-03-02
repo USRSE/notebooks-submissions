@@ -14,12 +14,23 @@ jobs:
         with:
           readme-path: README.md
 
-  test-check-submission:
-    uses: lbianchi-lbl/notebooks-ci/.github/workflows/check-submission.yml@main
-    with:
-      repository: lbianchi-lbl/sample-submission-1
-      # ref: 44e112021bd1f85148c237f972c066a6e6ac92dd # should fail
-      ref: d0b358a71fb1054158822d5cdc8fca21f4cb2bd9 # should pass
-      reproducible-document: my_doc.ipynb
-      container-registry: ''
-      binder-cache-branch: ''
+  test-with-sample-repo:
+    name: Test using sample repo (${{ matrix.repository }}@${{ matrix.ref }})
+    strategy:
+      fail-fast: false
+      matrix:
+        repository: [lbianchi-lbl/sample-submission-1]
+        workflow-under-test: [${{ github.repository }}/.github/workflows/check-submission.yml]
+        ref:
+          - main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repository }}
+          ref: ${{ matrix.ref }}
+      - name: Update references to workflow under test with current commit
+        run: |
+          git log -n 1
+          sed -i 's#^\(    uses: ${{ matrix.workflow-under-test }}\)\(@[^[:space:]]*\)#\1@${{ github.sha }}#' .github/workflows/*.yml
+          git status -v
