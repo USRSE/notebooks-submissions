@@ -19,8 +19,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        repository: [lbianchi-lbl/sample-submission-1]
-        workflow-under-test: [${{ github.repository }}/.github/workflows/check-submission.yml]
+        repository:
+          - lbianchi-lbl/sample-submission-1
+        workflow-under-test:
+          - ${{ github.repository }}/.github/workflows/check-submission.yml
         ref:
           - main
     runs-on: ubuntu-latest
