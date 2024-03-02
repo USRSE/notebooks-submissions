@@ -3,6 +3,9 @@ name: Test this repository
 on:
   push:
 
+env:
+  FORCE_COLOR: "yes"
+
 jobs:
 
   test-action:
@@ -35,4 +38,4 @@ jobs:
         run: |
           git log -n 1
           sed -i 's#^\(    uses: ${{ matrix.workflow-under-test }}\)\(@[^[:space:]]*\)#\1@${{ github.sha }}#' .github/workflows/*.yml
-          git status -v
+          git status -vv
