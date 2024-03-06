@@ -103,6 +103,6 @@ jobs:
               core.notice(txt);
               core.summary.addCodeBlock(txt, 'json');
               const {repository, filepath, ref} = parseWorkflowPath(wf.path);
-              core.summary.addRaw(`Workflow \`${filepath}`\ from ${repository}@${ref}`, true);
+              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref}`, true);
             }
             core.summary.write()
