@@ -102,7 +102,11 @@ jobs:
               const txt = JSON.stringify(wf, null, 4);
               core.notice(txt);
               core.summary.addCodeBlock(txt, 'json');
-              const {repository, filepath, ref} = parseWorkflowPath(wf.path);
+              const {path, sha} = wf;
+              const {repository, filepath, ref} = parseWorkflowPath(path);
               core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref}`, true);
+              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${sha}`, true);
+              const fileUrl = `${context.serverUrl}/blob/${ref}/${filepath}`;
+              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref} ([link](${fileUrl}))`, true);
             }
             core.summary.write()
