@@ -91,9 +91,10 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
-            core.notice(JSON.stringify(resp));
             const runInfo = resp.data;
-            core.notice(JSON.stringify(runInfo));
             for (const wf of runInfo.referenced_workflows) {
-              core.notice(JSON.stringify(wf));
+              const txt = JSON.stringify(wf, null, 4);
+              core.notice(txt);
+              core.summary.addCodeBlock(txt, 'json');
             }
+            core.summary.write()
