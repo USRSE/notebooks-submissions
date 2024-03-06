@@ -21,6 +21,15 @@ jobs:
           - main
     runs-on: ubuntu-latest
     steps:
+      - name: Define extra metadata
+        run: |
+          WORKFLOW_SHORT_SHA="$(echo ${{ github.sha }} | cut -c 1-7)"
+          WORKFLOW_SHORT_LINK="${{ github.repository }}@${WORKFLOW_SHORT_SHA}"
+          WORKFLOW_FULL_LINK="${{ matrix.workflow-under-test }}@${{ github.sha }}"
+
+          echo "WORKFLOW_SHORT_SHA=$WORKFLOW_SHORT_SHA" >> $GITHUB_ENV
+          echo "WORKFLOW_SHORT_LINK=$WORKFLOW_SHORT_LINK" >> $GITHUB_ENV
+          echo "WORKFLOW_FULL_LINK=$WORKFLOW_FULL_LINK" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
           repository: ${{ matrix.repository }}
@@ -38,5 +47,5 @@ jobs:
           git config --global push.autoSetupRemote true
           git add .github/workflows/*.yml
           git status -vv
-          git commit -m "Test ${{ matrix.workflow-under-test }}@${{ github.sha }}"
+          git commit -m "Test $WORKFLOW_SHORT_LINK" -m "Test $WORKFLOW_FULL_LINK"
           git push -f
