@@ -91,11 +91,18 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
             });
+            function parseWorkflowPath(path) {
+              const regex = /^(?<repository>[\w-]+[/][\w-]+)[/](?<filepath>[^@]+)@(?<ref>\S+)$/;
+              const match = path.match(regex);
+              const result = match.groups;
+              return result;
+            }
             const runInfo = resp.data;
             for (const wf of runInfo.referenced_workflows) {
               const txt = JSON.stringify(wf, null, 4);
               core.notice(txt);
               core.summary.addCodeBlock(txt, 'json');
-              core.summary.addRaw(wf.path, true);
+              const {repository, filepath, ref} = parseWorkflowPath(wf.path);
+              core.summary.addRaw(`Workflow \`${filepath}`\ from ${repository}@${ref}`, true);
             }
             core.summary.write()
