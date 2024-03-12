@@ -15,18 +15,6 @@ on:
         description: Git ref to be checked
         type: string
 
-      reproducible-document:
-        required: false
-        description: Path to reproducible document, if any
-        default: ''
-        type: string
-
-      quarto-render-args:
-        required: false
-        description: Extra args/options for the quarto render command
-        default: --to html -M self-contained:true --execute
-        type: string
-
       container-registry:
         description: If set, container image will be pushed to this registry
         type: string
