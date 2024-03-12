@@ -19,7 +19,7 @@ GitHub Actions workflows are defined by files in the `.github/workflows` directo
 In this case, our workflow (the _caller workflow_) will contain a single job referencing the workflow `check-submission.yml` defined in this (i.e.`USRSE/notebooks-submissions`) repository (the _called workflow_).
 
 1. From a local clone of your repository, or alternatively using the GitHub web interface, create a subdirectory named `.github/workflows`
-2. Inside `.github/workflow`, create a file with any name and the `.yml` extension, e.g. `.github/workflows/checks.yml`, containing the following snippet:
+2. Inside `.github/workflows`, create a file with any name and the `.yml` extension, e.g. `.github/workflows/checks.yml`, containing the following snippet:
   
   ```yml
   name: Check submission for US-RSE'24
