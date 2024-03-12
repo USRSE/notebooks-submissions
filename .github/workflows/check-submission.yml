@@ -119,6 +119,7 @@ jobs:
 
   image-build:
     name: Build image (repo2docker)
+    needs: [files]
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.repo2docker.outputs.IMAGE_SHA_NAME }}
