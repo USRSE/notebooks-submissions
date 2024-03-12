@@ -115,7 +115,7 @@ jobs:
       - name: Validate citation file
         run: |
           pip install cffconvert
-          cffconvert --validate CITATION.cff
+          cffconvert --validate
 
   image-build:
     name: Build image (repo2docker)
