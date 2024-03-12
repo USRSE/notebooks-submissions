@@ -2,6 +2,9 @@ name: Test this repository
 
 on:
   push:
+    paths:
+      - .github/**
+      - scripts/**
 
 env:
   FORCE_COLOR: "yes"
@@ -9,36 +12,45 @@ env:
 jobs:
 
   test-with-sample-repo:
-    name: Test using sample repo (${{ matrix.repository }}@${{ matrix.ref }})
+    name: Test using sample repo (${{ matrix.caller-repository }}@${{ matrix.caller-ref }}) for ref=${{ matrix.ref }}
     strategy:
       fail-fast: false
       matrix:
-        repository:
+        caller-repository:
           - lbianchi-lbl/sample-submission-1
-        workflow-under-test:
-          - ${{ github.repository }}/.github/workflows/check-submission.yml
-        ref:
+        caller-ref:
           - main
+        called-workflow:
+          - ${{ github.repository }}/.github/workflows/check-submission.yml
+        called-ref:
+          - ${{ github.sha }}
+          - ${{ github.ref_name }}
+          - ${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
       - name: Define extra metadata
         run: |
           WORKFLOW_SHORT_SHA="$(echo ${{ github.sha }} | cut -c 1-7)"
           WORKFLOW_SHORT_LINK="${{ github.repository }}@${WORKFLOW_SHORT_SHA}"
-          WORKFLOW_FULL_LINK="${{ matrix.workflow-under-test }}@${{ github.sha }}"
+          WORKFLOW_FULL_LINK="${{ matrix.called-workflow }}@${{ github.sha }}"
 
           echo "WORKFLOW_SHORT_SHA=$WORKFLOW_SHORT_SHA" >> $GITHUB_ENV
           echo "WORKFLOW_SHORT_LINK=$WORKFLOW_SHORT_LINK" >> $GITHUB_ENV
           echo "WORKFLOW_FULL_LINK=$WORKFLOW_FULL_LINK" >> $GITHUB_ENV
+      - name: Define extra metadata (non-SHA ref)
+        if: matrix.called-ref != github.sha
+        run: |
+          WORKFLOW_SHORT_LINK="${{ github.repository }}@${{ matrix.called-ref }}"
+          echo "WORKFLOW_SHORT_LINK=$WORKFLOW_SHORT_LINK" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         with:
-          repository: ${{ matrix.repository }}
-          ref: ${{ matrix.ref }}
+          repository: ${{ matrix.caller-repository }}
+          ref: ${{ matrix.caller-ref }}
           token: ${{ secrets.CLIENT_REPO_TOKEN }}
       - name: Update references to workflow under test with current commit
         run: |
           git log -n 1
-          sed -i 's#^\(    uses: ${{ matrix.workflow-under-test }}\)\(@[^[:space:]]*\)#\1@${{ github.sha }}#' .github/workflows/*.yml
+          sed -i 's#^\(    uses: ${{ matrix.called-workflow }}\)\(@[^[:space:]]*\)#\1@${{ matrix.called-ref }}#' .github/workflows/*.yml
           git status -vv
       - name: Commit and push changes
         run: |
