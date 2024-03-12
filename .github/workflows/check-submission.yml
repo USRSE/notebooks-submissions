@@ -89,6 +89,33 @@ jobs:
             }
             core.summary.write()
 
+  files:
+    name: Required files
+    runs-on: ubuntu-latest
+    env:
+      PIP_PROGRESS_BAR: 'off'
+
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.ref }}
+      - name: Validate notebook file
+        run: |
+          if [ -s "${{ inputs.notebook }}" ]; then
+              echo "Notebook file is present"
+          else
+              echo "::error Notebook file ${{ inputs.notebook }} not found or empty"
+              exit 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate citation file
+        run: |
+          pip install cffconvert
+          cffconvert --validate CITATION.cff
+
   image-build:
     name: Build image (repo2docker)
     runs-on: ubuntu-latest
