@@ -6,7 +6,7 @@ This repository contains instructions, GitHub Actions workflows, and accessory s
 
 - We have developed an **automated workflow** to test that a repository satisfies the **requirements for submission to the US-RSE'24 notebooks track**, and that the **notebook can be run in the same standardized, self-contained environment** that will be used during the review process
 - Authors **can, but are not required to, enable this workflow** to validate their repository at any stage, including while developing their notebook and/or before finalizing their submission
-- To enable the workflow and start testing your repository, refer to the 
+- To enable the workflow and start testing your repository, refer to the [Getting Started guide](docs/getting-started.md) in this repository
 
 ## A few key questions
 
