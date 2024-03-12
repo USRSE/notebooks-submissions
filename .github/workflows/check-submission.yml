@@ -90,6 +90,6 @@ jobs:
               const {path, sha} = wf;
               const {repository, filepath, ref} = parseWorkflowPath(path);
               const fileUrl = `${context.serverUrl}/${repository}/blob/${ref}/${filepath}`;
-              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref} (\`{ref}\`)` ([link to file](${fileUrl}))`, true);
+              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref} (\`{ref}\`) ([link to file](${fileUrl}))`, true);
             }
             core.summary.write()
