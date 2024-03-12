@@ -5,15 +5,22 @@ on:
   workflow_call:
     inputs:
 
-      repository:
+      notebook:
         required: true
-        description: Full name (owner/repo-name) to be checked
+        description: Path to the notebook file, relative to the repository root
         type: string
 
+      repository:
+        required: false
+        description: Full name (owner/repo-name) to be checked
+        type: string
+        default: ${{ github.repository }}
+
       ref:
-        required: true
+        required: false
         description: Git ref to be checked
         type: string
+        default: ${{ github.ref }}
 
       container-registry:
         description: If set, container image will be pushed to this registry
