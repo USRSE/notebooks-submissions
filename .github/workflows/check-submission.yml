@@ -63,26 +63,12 @@ on:
 jobs:
 
   info:
-    name: Info about the workflow run
+    name: Info
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
 
-      - name: Called workflow info
-        run: |
-          wf_info=$(
-            gh api \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }} \
-            --jq '.referenced_workflows'
-          )
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          echo "$wf_info" | jq >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-      - name: Called workflow info using JS
+      - name: Display called workflow
         uses: actions/github-script@v7
         with:
           script: |
@@ -101,12 +87,9 @@ jobs:
             for (const wf of runInfo.referenced_workflows) {
               const txt = JSON.stringify(wf, null, 4);
               core.notice(txt);
-              core.summary.addCodeBlock(txt, 'json');
               const {path, sha} = wf;
               const {repository, filepath, ref} = parseWorkflowPath(path);
-              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref}`, true);
-              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${sha}`, true);
               const fileUrl = `${context.serverUrl}/${repository}/blob/${ref}/${filepath}`;
-              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref} ([link to file](${fileUrl}))`, true);
+              core.summary.addRaw(`Workflow \`${filepath}\` from ${repository}@${ref} (\`{ref}\`)` ([link to file](${fileUrl}))`, true);
             }
             core.summary.write()
