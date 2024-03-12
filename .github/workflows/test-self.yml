@@ -2,9 +2,6 @@ name: Test this repository
 
 on:
   push:
-    paths:
-      - .github/**
-      - scripts/**
 
 env:
   FORCE_COLOR: "yes"
