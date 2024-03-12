@@ -137,7 +137,7 @@ jobs:
         with:
           NO_PUSH: "true"
           IMAGE_NAME: ${{ inputs.repository }}
-          MYBINDERORG_TAG: ${{ inputs.ref }}
+          MYBINDERORG_TAG: ${{ github.sha }}
 
       - name: repo2docker (push)
         uses: jupyterhub/repo2docker-action@b3cd89ff99f95b00abb5b4db27ec49bb4d3f8c85
@@ -149,7 +149,7 @@ jobs:
           DOCKER_USERNAME: ${{ github.actor }}
           DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ inputs.repository }}
-          MYBINDERORG_TAG: ${{ inputs.ref }}
+          MYBINDERORG_TAG: ${{ github.sha }}
 
   container-launch:
     name: Test container launch
