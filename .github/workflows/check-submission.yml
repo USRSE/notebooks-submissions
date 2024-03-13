@@ -248,17 +248,25 @@ jobs:
     needs: [image-build, container-launch, binder-cache]
     runs-on: ubuntu-latest
     if: ${{ always() }}
+    env:
+      RESOURCES_REPO_URL: ${{ github.server_url }}/USRSE/notebooks-submissions
+      DOCS_URL: ${{ github.server_url }}/USRSE/notebooks-submissions/blob/main/docs
+      SLACK_URL: https://usrse.slack.com/archives/C060Z8034MU
     steps:
 
       - name: Report build failure
         if: ${{ !( needs.image-build.result == 'success' && needs.container-launch.result == 'success') }}
         run: |
-          cat << EOF > $GITHUB_STEP_SUMMARY
+          cat << 'EOF' > $GITHUB_STEP_SUMMARY
           The CI run was not successful for ${{ inputs.repository }}@${{ inputs.ref }}.
 
           See the following resources for details:
           
-          - <https://github.com/USRSE/usrse23/wiki/notebooks-submissions>
+          - [Notebooks CI repository](${{ env.RESOURCES_REPO_URL }})
+          - [Notebooks CI troubleshooting](${{ env.DOCS_URL }}/troubleshooting.md)
+          - [Notebooks CI documentation](${{ env.DOCS_URL }})
+          - [Notebooks CI wiki](${{ env.RESOURCES_REPO_URL }}/wiki)
+          - [`#usrse24` channel](${{ env.SLACK_URL }}) on the US-RSE Slack workspace
 
           EOF
 
