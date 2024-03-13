@@ -164,6 +164,13 @@ jobs:
     needs: [image-build]
     steps:
 
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run command to test built image ${{ needs.image-build.outputs.image }}
         id: run
         run: |
