@@ -64,14 +64,7 @@ jobs:
           git commit -m "Test $WORKFLOW_SHORT_LINK" -m "Test $WORKFLOW_FULL_LINK"
           git push -f
           echo "CALLER_SHA=$(git log -n 1 --format='%H')" >> $GITHUB_ENV
-      - name: Display caller workflow runs for this commit
-        env:
-          GH_TOKEN: ${{ secrets.CLIENT_REPO_TOKEN }}
+      - name: Show link to access caller workflow runs
+        if: strategy.job-index == '0'
         run: |
-          gh run list \
-          --repo ${{ matrix.caller-repository }} \
-          --commit ${{ env.CALLER_SHA }} \
-          --json url,displayTitle,status \
-          --template '{{ range .}}{{ .url }}{{ end }}' \
-          >> $GITHUB_STEP_SUMMARY
-
+          echo "URL for caller workflow run(s): <${{ github.server_url }}/${{ matrix.caller-repository }}/actions>" >> $GITHUB_STEP_SUMMARY
