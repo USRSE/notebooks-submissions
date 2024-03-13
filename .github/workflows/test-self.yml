@@ -72,6 +72,6 @@ jobs:
           --repo ${{ matrix.caller-repository }} \
           --commit ${{ env.CALLER_SHA }} \
           --json url,displayTitle,status \
-          --template '- {{range .}}[{{.displayTitle}}]({{.url}}) ({{.status}}){{end}}' \
+          --template '{{ range .}}{{ .url }}{{ end }}' \
           >> $GITHUB_STEP_SUMMARY
 
