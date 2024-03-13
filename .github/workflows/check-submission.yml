@@ -34,12 +34,6 @@ on:
         required: false
         default: ${{ github.actor }}
 
-      container-registry-password:
-        description: Password to container registry
-        type: string
-        required: false
-        default: ${{ secrets.GITHUB_TOKEN }}
-
       binder-cache-branch:
         description: If set (default), the built container image will be written to .binder/Dockerfile and pushed to this branch. To disable this, set it to the empty string.
         type: string
@@ -66,6 +60,11 @@ on:
         type: string
         required: false
         default: 'https://mybinder.org/v2'
+
+    secrets:
+      container-registry-password:
+        description: Password to container registry
+        required: false
 
 jobs:
 
@@ -165,7 +164,7 @@ jobs:
           NO_PUSH: "false"
           DOCKER_REGISTRY: ${{ inputs.container-registry }}
           DOCKER_USERNAME: ${{ inputs.container-registry-username }}
-          DOCKER_PASSWORD: ${{ inputs.container-registry-password }}
+          DOCKER_PASSWORD: ${{ secrets.container-registry-password || secrets.GITHUB_TOKEN }}
           IMAGE_NAME: ${{ env.NORMALIZED_IMAGE_NAME }}
           MYBINDERORG_TAG: ${{ github.sha }}
 
@@ -181,7 +180,7 @@ jobs:
         with:
           registry: ${{ inputs.container-registry }}
           username: ${{ inputs.container-registry-username }}
-          password: ${{ inputs.container-registry-password }}
+          password: ${{ secrets.container-registry-password || secrets.GITHUB_TOKEN }}
 
       - name: Run command to test built image ${{ needs.image-build.outputs.image }}
         id: run
