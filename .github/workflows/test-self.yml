@@ -9,7 +9,7 @@ env:
 jobs:
 
   test-with-sample-repo:
-    name: Test using sample repo (${{ matrix.caller-repository }}@${{ matrix.caller-ref }}) for ref=${{ matrix.ref }}
+    name: Test ref=${{ matrix.called-ref }} using sample repo ${{ matrix.caller-repository }}@${{ matrix.caller-ref }}
     strategy:
       fail-fast: false
       matrix:
