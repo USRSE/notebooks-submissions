@@ -29,7 +29,7 @@ jobs:
         env:
           wait_time_s: ${{ strategy.job-index }}
         run: |
-          sleep "$wait_time_s"
+          sleep $(( 5 * $wait_time_s ))
       - name: Define extra metadata
         run: |
           WORKFLOW_SHORT_SHA="$(echo ${{ github.sha }} | cut -c 1-7)"
