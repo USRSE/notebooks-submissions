@@ -22,7 +22,6 @@ jobs:
         called-ref:
           - ${{ github.sha }}
           - ${{ github.ref_name }}
-          - ${{ github.ref }}
     runs-on: ubuntu-latest
     steps:
       - name: Wait a bit to avoid race conditions
