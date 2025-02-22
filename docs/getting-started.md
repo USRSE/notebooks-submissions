@@ -22,7 +22,7 @@ In this case, our workflow (the _caller workflow_) will contain a single job ref
 2. Inside `.github/workflows`, create a file with any name and the `.yml` extension, e.g. `.github/workflows/checks.yml`, containing the following snippet:
   
   ```yml
-  name: Check submission for US-RSE'24
+  name: Check submission for USRSE'25
 
   on:
     push:  # `on.push` means that the workflow will be triggered any time one or more commits are pushed to the repository
@@ -44,4 +44,4 @@ In this case, our workflow (the _caller workflow_) will contain a single job ref
 - The exact list of files will depend on the specific programming language (Python, R, ...), file format (`.qmd`, `.ipynb`, `.Rmd`, ...), external dependencies, etc needed to run your notebook
 - To help you choose which files should be added to your repository based on your notebook's needs, refer to the following resources:
   - The [`usrse-notebooks-sample-submission` topic on GitHub](https://github.com/topics/usrse-notebooks-sample-submission) collects a set of repositories showcasing some of the possible configurations
-  - The [_Configuring your repository_ section of the repo2docker documentation](https://repo2docker.readthedocs.io/en/latest/configuration/index.html) contains a comprehensive list of files supported by the US-RSE'24 notebooks CI workflow build infrastructure, which (similarly to mybinder.org) is based on the versatile `repo2docker` tool
+  - The [_Configuring your repository_ section of the repo2docker documentation](https://repo2docker.readthedocs.io/en/latest/configuration/index.html) contains a comprehensive list of files supported by the USRSE'25 notebooks CI workflow build infrastructure, which (similarly to mybinder.org) is based on the versatile `repo2docker` tool
