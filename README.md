@@ -1,10 +1,10 @@
-# Continuous Integration (CI) resources for US-RSE'25 computational notebooks submissions
+# Continuous Integration (CI) resources for USRSE'25 computational notebooks submissions
 
-This repository contains instructions, GitHub Actions workflows, and accessory scripts to help authors tests their submissions for the Computational Notebooks track at the [US-RSE'25 conference](https://USRSE.github.io/usrse25).
+This repository contains instructions, GitHub Actions workflows, and accessory scripts to help authors tests their submissions for the Computational Notebooks track at the [USRSE'25 conference](https://USRSE.github.io/usrse25).
 
 ## In a nutshell
 
-- We have developed an **automated workflow** to test that a repository satisfies the **requirements for submission to the US-RSE'25 notebooks track**, and that the **notebook can be run in the same standardized, self-contained environment** that will be used during the review process
+- We have developed an **automated workflow** to test that a repository satisfies the **requirements for submission to the USRSE'25 notebooks track**, and that the **notebook can be run in the same standardized, self-contained environment** that will be used during the review process
 - Authors **can, but are not required to, enable this workflow** to validate their repository at any stage, including while developing their notebook and/or before finalizing their submission
 - To enable the workflow and start testing your repository, refer to the [Getting Started guide](docs/getting-started.md) in this repository
 
@@ -29,18 +29,18 @@ This repository contains instructions, GitHub Actions workflows, and accessory s
   - Even if **authors** try their best to **provide resources for reproducing a valid computational environment** in which their submission can be run (such as documentation, packaging/environment metadata, etc), the **lack of an automated way to test and a documented standard for the computational environment** that will be used limits their ability to validate their resources (and, therefore, estimating how likely it is that their notebooks will run as expected during review) before finalizing their submission
 - By providing **a set of automated checks that can run on the repository before submission**, based on the **same standardized tools, specifications, and computational environment available to reviewers**, the CI workflow addresses both of these issues, giving authors the possibility to **focus their efforts toward a concrete goal for computational reproducibility** for their US-RSE notebooks submission, hopefully only requiring a reasonable amount of extra effort
 
-### I'm interested in submitting a notebook to US-RSE'25, but I'm not sure about this CI thing. Am I still able to submit without it?
+### I'm interested in submitting a notebook to USRSE'25, but I'm not sure about this CI thing. Am I still able to submit without it?
 
-- In one sentence: **absolutely, yes!** Using this CI workflow **is not a requirement for submission** for US-RSE'25
+- In one sentence: **absolutely, yes!** Using this CI workflow **is not a requirement for submission** for USRSE'25
 - **Using this CI workflow is completely optional**. Authors who choose not to enable it for their repository for any reason will not be penalized in any way, as long as their repository satisfies the mandatory requirements described in the submission instructions
 
-### What do I have to do to enable the US-RSE notebooks CI workflow for my GitHub repository?
+### What do I have to do to enable the USRSE notebooks CI workflow for my GitHub repository?
 
 Refer to the [Getting Started](docs/getting-started.md) section of the [documentation](docs/) in this repository.
 
 ## Next steps
 
-If you're interested to know more about the US-RSE'25 notebooks submissions:
+If you're interested to know more about the USRSE'25 notebooks submissions:
 
 - Join the `#usrse25` channel on the US-RSE Slack workspace to receive general news about the conference, as well as updates specific to the notebooks CI resources hosted in this repository
 - Star this repository to receive notifications about new versions, functionality being added, etc
